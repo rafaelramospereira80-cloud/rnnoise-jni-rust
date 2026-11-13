@@ -1,0 +1,28 @@
+name: Build Android ARM64
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android
+
+      - name: Instalar cargo-ndk
+        run: cargo install cargo-ndk
+
+      - name: Compilar para Android
+        working-directory: rust
+        run: cargo ndk -t arm64-v8a build --release
+
+      - name: Salvar arquivo compilado
+        uses: actions/upload-artifact@v4
+        with:
+          name: librnnoise-android
+          path: rust/target/aarch64-linux-android/release/librnnoise_jni_rust.so
